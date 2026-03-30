@@ -1,0 +1,27 @@
+ const users: User[] = [
+    {
+      id: "USR001",
+      name: "John Doe",
+      email: "john.doe@example.com",
+      phone: "08012345678",
+      walletBalance: "₦15,000",
+      pinStatus: "set",
+      status: "active",
+      joinDate: "2023-10-15",
+      lastLogin: "2024-01-14 08:30 AM",
+    },
+    {
+      id: "USR002",
+      name: "Jane Smith",
+      email: "jane.smith@example.com",
+      phone: "08023456789",
+      walletBalance: "₦8,500",
+      pinStatus: "not-set",
+      status: "active",
+      joinDate: "2023-11-05",
+      lastLogin: "2024-01-15 10:15 AM",
+    },
+    // More users...
+  ]
+
+  return users
