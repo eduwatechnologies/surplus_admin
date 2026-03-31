@@ -15,17 +15,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Check if the current path is the login page
-  if (pathname === "/login") {
+  // Public routes
+  if (pathname === "/" || pathname === "/login" || pathname === "/signup") {
     const token = request.cookies.get("admin_token")?.value
-
-    // If the user is already authenticated, redirect to the dashboard
-    if (token) {
+    if (token && (pathname === "/login" || pathname === "/signup")) {
       const url = new URL("/", request.url)
       return NextResponse.redirect(url)
     }
-
-    // Otherwise, allow access to login page
     return NextResponse.next()
   }
 

@@ -32,22 +32,24 @@ import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import axiosInstance from "@/app/api/auth/axiosInstance";
-import { Badge } from "@/components/ui/badge";
-import { useLicense } from "@/components/use-license";
+import { useAuth } from "@/components/providers/auth-provider";
 
-function useBranding() {
+function useBranding(role?: string) {
   const [name, setName] = useState(process.env.NEXT_PUBLIC_BRAND_NAME || "ALMALEEK");
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [primaryColor, setPrimaryColor] = useState<string | null>(null);
   useEffect(() => {
     let mounted = true;
+    const isMerchant = role === "merchant" || role === "reseller";
+    const path = isMerchant ? "/tenants/me" : "/config/branding";
     axiosInstance
-      .get("/config/branding")
+      .get(path)
       .then((res) => {
         if (!mounted) return;
         const d = res.data?.data || {};
-        if (d.brandName && typeof d.brandName === "string" && d.brandName.trim()) {
-          setName(d.brandName);
+        const brandName = d.brandName || d.slug;
+        if (brandName && typeof brandName === "string" && brandName.trim()) {
+          setName(brandName);
         }
         if (typeof d.logoUrl === "string") setLogoUrl(d.logoUrl || null);
         if (typeof d.primaryColor === "string") setPrimaryColor(d.primaryColor || null);
@@ -56,12 +58,12 @@ function useBranding() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [role]);
   return { name, logoUrl, primaryColor };
 }
 
 // Define menu structure with categories
-const menuGroups = [
+const staffMenuGroups = [
   {
     label: "DASHBOARD",
     items: [
@@ -137,9 +139,45 @@ const menuGroups = [
 
 export function AppSidebar() {
   const pathname = usePathname();
-  const { name: BRAND_NAME, logoUrl, primaryColor } = useBranding();
+  const { user } = useAuth();
+  const role = user?.role;
+  const isMerchant = role === "merchant" || role === "reseller";
+  const { name: BRAND_NAME, logoUrl, primaryColor } = useBranding(role);
   const BRAND_INITIAL = (BRAND_NAME.trim()[0] || "A").toUpperCase();
-  const { loaded: licenseLoaded, providerManagerAllowed } = useLicense();
+  const menuGroups = isMerchant
+    ? [
+        {
+          label: "MERCHANT",
+          items: [
+            {
+              title: "Pricing",
+              url: "/pricing",
+              icon: DollarSign,
+            },
+            {
+              title: "Customers",
+              url: "/customers",
+              icon: Users,
+            },
+            {
+              title: "Transactions",
+              url: "/merchant-transactions",
+              icon: CreditCard,
+            },
+            {
+              title: "Wallet",
+              url: "/wallet",
+              icon: Wallet,
+            },
+            {
+              title: "Settings",
+              url: "/settings",
+              icon: Settings,
+            },
+          ],
+        },
+      ]
+    : staffMenuGroups;
 
   const onLogout = () => {
     console.log("User logged out");
@@ -187,21 +225,13 @@ export function AppSidebar() {
             <SidebarMenu>
               {group.items.map((item) => {
                 const isActive = pathname === item.url;
-                const isDisabled =
-                  Boolean((item as any).requiresProviderManager) &&
-                  licenseLoaded &&
-                  !providerManagerAllowed;
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={isActive} className="hover:bg-slate-800 hover:text-white data-[active=true]:bg-slate-800 data-[active=true]:text-white ring-offset-transparent focus-visible:ring-0">
                       <Link
                         href={item.url}
-                        onClick={(e) => {
-                          if (isDisabled) e.preventDefault();
-                        }}
                         className={cn(
                           "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium group relative",
-                          isDisabled && "opacity-50 cursor-not-allowed",
                           isActive
                             ? "bg-slate-800 text-white shadow-md"
                             : "text-slate-400 hover:bg-slate-800/50 hover:text-white"
@@ -209,7 +239,6 @@ export function AppSidebar() {
                       >
                         <item.icon className={cn("w-5 h-5 transition-colors", isActive ? "text-indigo-400" : "text-slate-500 group-hover:text-indigo-300")} />
                         <span>{item.title}</span>
-                        {isDisabled && <Badge variant="outline" className="ml-auto">Pro</Badge>}
                         {isActive && (
                             <div className="absolute right-2 w-1.5 h-1.5 rounded-full bg-indigo-500" />
                         )}

@@ -43,14 +43,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical, Edit, Trash2 } from "lucide-react";
-import { useLicense } from "@/components/use-license";
 
 export default function NetworkProvidersPage() {
   const dispatch = useAppDispatch();
   const { providers, loading, error } = useSelector(
     (state: RootState) => state.networkProviders
   );
-  const { providerManagerAllowed, loaded: licenseLoaded } = useLicense();
 
   const [showModal, setShowModal] = useState(false);
   const [editingProvider, setEditingProvider] = useState<any | null>(null);
@@ -60,19 +58,16 @@ export default function NetworkProvidersPage() {
   }, [dispatch]);
 
   const handleAdd = () => {
-    if (!providerManagerAllowed) return;
     setEditingProvider(null);
     setShowModal(true);
   };
 
   const handleEdit = (provider: any) => {
-    if (!providerManagerAllowed) return;
     setEditingProvider(provider);
     setShowModal(true);
   };
 
   const handleDelete = async (id: string) => {
-    if (!providerManagerAllowed) return;
     if (confirm("Are you sure you want to delete this provider?")) {
       try {
         await dispatch(deleteProvider(id)).unwrap();
@@ -100,16 +95,10 @@ export default function NetworkProvidersPage() {
             <Button
               className="text-white bg-blue-600 hover:bg-blue-700"
               onClick={handleAdd}
-              disabled={licenseLoaded && !providerManagerAllowed}
             >
               Add New Provider
             </Button>
           </div>
-          {licenseLoaded && !providerManagerAllowed && (
-            <div className="p-4 rounded-md border border-yellow-300 bg-yellow-50 text-sm text-yellow-800">
-              Network provider management is not available on your current plan.
-            </div>
-          )}
 
           <Card>
             <CardHeader>
@@ -170,7 +159,6 @@ export default function NetworkProvidersPage() {
                               <DropdownMenuContent align="end">
                                 <DropdownMenuItem
                                   onClick={() => handleEdit(provider)}
-                                  disabled={licenseLoaded && !providerManagerAllowed}
                                 >
                                   <Edit className="mr-2 h-4 w-4" />
                                   Edit
@@ -178,7 +166,6 @@ export default function NetworkProvidersPage() {
                                 <DropdownMenuItem
                                   className="text-red-600 focus:text-red-700"
                                   onClick={() => handleDelete(provider._id)}
-                                  disabled={licenseLoaded && !providerManagerAllowed}
                                 >
                                   <Trash2 className="mr-2 h-4 w-4" />
                                   Delete

@@ -3,7 +3,6 @@ import { AuthProvider } from "@/components/providers/auth-provider";
 import { ReduxProvider } from "@/components/providers/redux-provider";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import LicenseBanner from "@/components/license-banner";
 
 export const metadata = {
   title: `${process.env.NEXT_PUBLIC_BRAND_NAME || "Almaleek"} Dashboard`,
@@ -20,7 +19,6 @@ export default function RootLayout({
       <body className="bg-gray-50">
         <AuthProvider>
           <ReduxProvider>
-            <LicenseBanner />
             {children}
           </ReduxProvider>
           <Toaster />

@@ -5,7 +5,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { useLicense } from "@/components/use-license"
 
 type ProviderState = {
   vtpass: { publicKey?: string; apiKey?: string; secretKey?: string; baseUrl?: string }
@@ -20,7 +19,6 @@ export function ApiSettings() {
     autopilot: {},
   })
   const [saving, setSaving] = useState(false)
-  const { providerManagerAllowed } = useLicense()
 
   useEffect(() => {
     let mounted = true
@@ -53,7 +51,6 @@ export function ApiSettings() {
   }, [])
 
   const save = async () => {
-    if (!providerManagerAllowed) return
     setSaving(true)
     try {
       await axiosInstance.put("/config/providers", state)
@@ -69,11 +66,6 @@ export function ApiSettings() {
         <CardDescription>Configure provider credentials and endpoints</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        {!providerManagerAllowed && (
-          <div className="p-4 rounded-md border border-yellow-300 bg-yellow-50 text-sm text-yellow-800">
-            Provider management is not available on your current plan.
-          </div>
-        )}
         <div className="grid md:grid-cols-2 gap-6">
           <div className="space-y-3">
             <h3 className="font-semibold">VTpass</h3>
@@ -145,7 +137,7 @@ export function ApiSettings() {
             </div>
           </div>
         </div>
-        <Button onClick={save} disabled={saving || !providerManagerAllowed}>{saving ? "Saving..." : "Save"}</Button>
+        <Button onClick={save} disabled={saving}>{saving ? "Saving..." : "Save"}</Button>
       </CardContent>
     </Card>
   )

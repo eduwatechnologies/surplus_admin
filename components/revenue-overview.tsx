@@ -2,44 +2,9 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useEffect, useState } from "react"
-import axiosInstance from "@/app/api/auth/axiosInstance"
-
-type LicenseInfo = {
-  mode: string
-  status: string
-  tier: string | null
-  features: Record<string, any>
-  expiresAt: string | null
-}
-
-function isAnalyticsEnabled(info: LicenseInfo | null) {
-  if (!info) return true
-  const mode = (info.mode || "off").toLowerCase()
-  if (mode === "off") return true
-  const tier = (info.tier || "basic").toLowerCase()
-  if (tier === "pro" || tier === "enterprise") return true
-  if (info.features && info.features.analytics === true) return true
-  return false
-}
 
 export function RevenueOverview() {
-  const [license, setLicense] = useState<LicenseInfo | null>(null)
-
-  useEffect(() => {
-    let mounted = true
-    axiosInstance
-      .get("/license/status")
-      .then((res) => {
-        if (mounted) setLicense(res.data)
-      })
-      .catch(() => {})
-    return () => {
-      mounted = false
-    }
-  }, [])
-
-  const allowed = isAnalyticsEnabled(license)
+  const allowed = true
 
   return (
     <Card>

@@ -6,6 +6,53 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+:root {
+  --brand-50: #fff1f2;
+  --brand-100: #ffe4e6;
+  --brand-200: #fecdd3;
+  --brand-400: #fb7185;
+  --brand-500: #f43f5e;
+  --brand-600: #e11d48;
+  --brand-700: #be123c;
+  --brand-blob-30: rgba(244, 63, 94, 0.3);
+  --brand-blob-20: rgba(251, 113, 133, 0.2);
+  --brand-blob-60: rgba(254, 205, 211, 0.6);
+  --brand-glass: rgba(225, 29, 72, 0.3);
+  --brand-glass-strong: rgba(244, 63, 94, 0.45);
+}
+
+.brand-text {
+  color: var(--brand-600);
+}
+
+.brand-text-strong {
+  color: var(--brand-700);
+}
+
+.brand-icon {
+  color: var(--brand-400);
+}
+
+.brand-bg {
+  background-color: var(--brand-600);
+}
+
+.brand-bg:hover {
+  background-color: var(--brand-700);
+}
+
+.brand-soft-bg {
+  background-color: var(--brand-100);
+}
+
+.brand-border {
+  border-color: var(--brand-200);
+}
+
+.brand-gradient {
+  background-image: linear-gradient(to right, var(--brand-600), var(--brand-700));
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
