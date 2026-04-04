@@ -4,6 +4,8 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 export interface CategoryProvider {
   _id?: string;
+  subServiceId?: string;
+  network?: string;
   category: string;
   provider: string;
   status: boolean;

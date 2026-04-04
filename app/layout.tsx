@@ -5,7 +5,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata = {
-  title: `${process.env.NEXT_PUBLIC_BRAND_NAME || "Almaleek"} Dashboard`,
+  title: `Surplus Dashboard`,
   description: "Admin dashboard for VTU services",
 };
 
@@ -16,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="bg-gray-50">
+      <body className="bg-white text-slate-900">
         <AuthProvider>
           <ReduxProvider>
             {children}

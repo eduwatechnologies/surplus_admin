@@ -19,8 +19,12 @@ import {
 } from "@/lib/redux/slices/categoryProviderSlice";
 
 interface CategoryProviderFormProps {
+  subServiceId: string;
+  network: string;
   initialValues?: {
     _id?: string;
+    subServiceId?: string;
+    network?: string;
     category: string;
     provider: string;
     status: boolean;
@@ -37,7 +41,11 @@ const categoryProviderValidation = Yup.object().shape({
 });
 
 export function CategoryProviderForm({
+  subServiceId,
+  network,
   initialValues = {
+    subServiceId: "",
+    network: "",
     category: "",
     provider: "",
     status: true,
@@ -54,9 +62,21 @@ export function CategoryProviderForm({
       onSubmit={async (values, { setSubmitting }) => {
         try {
           if (!values._id) {
-            await dispatch(createCategoryProvider(values));
+            await dispatch(
+              createCategoryProvider({
+                ...values,
+                subServiceId,
+                network,
+              })
+            );
           } else {
-            await dispatch(updateCategoryProvider(values as any));
+            await dispatch(
+              updateCategoryProvider({
+                id: values._id,
+                provider: values.provider,
+                status: values.status,
+              } as any)
+            );
           }
           setSubmitting(false);
           onSubmitSuccess?.();
@@ -67,6 +87,17 @@ export function CategoryProviderForm({
     >
       {({ isSubmitting, values, setFieldValue }) => (
         <Form className="space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block font-medium">Network</label>
+              <Input value={network?.toUpperCase?.() || network} disabled />
+            </div>
+            <div>
+              <label className="block font-medium">Subservice</label>
+              <Input value={subServiceId} disabled />
+            </div>
+          </div>
+
           {/* Category */}
           <div>
             <label className="block font-medium">Category</label>

@@ -81,6 +81,10 @@ export default function ServicesPage() {
   >(null);
   const [openServiceDialog, setOpenServiceDialog] = useState(false);
   const [openCategoryDialog, setOpenCategoryDialog] = useState(false);
+  const [categoryTarget, setCategoryTarget] = useState<{
+    subServiceId: string;
+    network: string;
+  } | null>(null);
   const [openDialogForPlan, setOpenDialogForPlan] = useState<string | null>(
     null
   );
@@ -279,6 +283,10 @@ export default function ServicesPage() {
                                     onDelete={handleDeleteSubService}
                                     onEdit={handleEditSubService}
                                     onAddPlan={handleAddPlan}
+                                    onAddCategory={({ subServiceId, network }: any) => {
+                                      setCategoryTarget({ subServiceId, network });
+                                      setOpenCategoryDialog(true);
+                                    }}
                                     onEditPlan={handleEditPlan}
                                     onDeletePlan={handleDeleteServicePlan}
                                   />
@@ -404,15 +412,21 @@ export default function ServicesPage() {
             onOpenChange={(isOpen) => {
               if (!isOpen) {
                 setOpenCategoryDialog(false); // Close dialog when user clicks outside or presses ESC
+                setCategoryTarget(null);
               }
             }}
             title="Add Category"
           >
-            <CategoryProviderForm
-              onSubmitSuccess={() => {
-                setOpenCategoryDialog(false); // Close after successful submit
-              }}
-            />
+            {categoryTarget ? (
+              <CategoryProviderForm
+                subServiceId={categoryTarget.subServiceId}
+                network={categoryTarget.network}
+                onSubmitSuccess={() => {
+                  setOpenCategoryDialog(false);
+                  setCategoryTarget(null);
+                }}
+              />
+            ) : null}
           </FormDialog>
         </main>
       </SidebarInset>

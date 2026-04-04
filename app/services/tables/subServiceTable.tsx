@@ -36,6 +36,7 @@ export function SubServicesTable({
   onToggleSubService,
   onToggleStatus,
   onAddPlan,
+  onAddCategory,
   onDelete,
   onEdit,
   onEditPlan,
@@ -125,15 +126,18 @@ export function SubServicesTable({
                   </TableCell>
                 </TableRow>
 
-                {subExpanded && sub.servicePlans?.length > 0 && (
+                {subExpanded && (
                   <TableRow key={`${sub._id}-plans`} className="bg-muted/5">
                     <TableCell colSpan={6}>
                       <PlansTable
-                        plans={sub.servicePlans}
+                        plans={sub.servicePlans || []}
                         subName={sub.name}
                         onEdit={onEditPlan}
                         onDelete={onDeletePlan}
                         subId={sub._id}
+                        subCode={sub.code}
+                        serviceType={service?.type}
+                        onAddCategory={onAddCategory}
                       />
                     </TableCell>
                   </TableRow>

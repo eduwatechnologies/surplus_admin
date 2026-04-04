@@ -532,411 +532,456 @@ function MerchantSettings() {
           {tenantError}
         </div>
       ) : (
-        <div className="space-y-8">
-          <div className="rounded-lg border bg-background p-6 space-y-4">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <div className="text-lg font-semibold">Branding</div>
-                <div className="text-sm text-muted-foreground">
-                  Slug: {tenant?.slug || "-"}
-                </div>
-              </div>
-              <Button onClick={saveTenant} disabled={tenantSaving}>
-                {tenantSaving ? "Saving..." : "Save Branding"}
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Brand Name</Label>
-                <Input value={brandName} onChange={(e) => setBrandName(e.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <Label>Primary Color</Label>
-                <Input
-                  value={primaryColor}
-                  onChange={(e) => setPrimaryColor(e.target.value)}
-                  placeholder="#2563eb"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Logo URL</Label>
-                <Input value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <Label>Support Email</Label>
-                <Input value={supportEmail} onChange={(e) => setSupportEmail(e.target.value)} />
-              </div>
-              <div className="space-y-2">
-                <Label>Support Phone</Label>
-                <Input value={supportPhone} onChange={(e) => setSupportPhone(e.target.value)} />
-              </div>
-            </div>
+        <Tabs defaultValue="branding" className="space-y-6">
+          <div className="border-b pb-0 overflow-x-auto">
+            <TabsList className="bg-transparent h-auto p-0 space-x-6 justify-start w-full">
+              <TabsTrigger
+                value="branding"
+                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3 px-1"
+              >
+                Branding
+              </TabsTrigger>
+              <TabsTrigger
+                value="services"
+                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3 px-1"
+              >
+                Services
+              </TabsTrigger>
+              <TabsTrigger
+                value="risk"
+                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3 px-1"
+              >
+                Risk & Limits
+              </TabsTrigger>
+              <TabsTrigger
+                value="pricing"
+                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3 px-1"
+              >
+                Pricing
+              </TabsTrigger>
+              <TabsTrigger
+                value="audit"
+                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3 px-1"
+              >
+                Audit Logs
+              </TabsTrigger>
+            </TabsList>
           </div>
 
-          <div className="rounded-lg border bg-background p-6 space-y-4">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <div className="text-lg font-semibold">Service Availability</div>
-                <div className="text-sm text-muted-foreground">
-                  Disable any service to hide it from your storefront and block purchases.
-                </div>
-              </div>
-              <Button onClick={saveTenant} disabled={tenantSaving}>
-                {tenantSaving ? "Saving..." : "Save Availability"}
-              </Button>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {[
-                { key: "airtime", label: "Airtime" },
-                { key: "data", label: "Data" },
-                { key: "electricity", label: "Electricity" },
-                { key: "cable_tv", label: "Cable TV" },
-                { key: "exam_pin", label: "Exam PIN" },
-              ].map((s) => {
-                const enabled = !disabledServices.includes(s.key);
-                return (
-                  <div key={s.key} className="flex items-center justify-between rounded-md border p-3">
-                    <div className="text-sm font-medium">{s.label}</div>
-                    <Switch
-                      checked={enabled}
-                      onCheckedChange={(checked) =>
-                        setDisabledServices((prev) => {
-                          const set = new Set(prev);
-                          if (checked) set.delete(s.key);
-                          else set.add(s.key);
-                          return Array.from(set);
-                        })
-                      }
-                    />
+          <TabsContent value="branding" className="animate-in fade-in-50 duration-300">
+            <div className="rounded-lg border bg-background p-6 space-y-4">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-lg font-semibold">Branding</div>
+                  <div className="text-sm text-muted-foreground">
+                    Slug: {tenant?.slug || "-"}
                   </div>
-                );
-              })}
-            </div>
-          </div>
+                </div>
+                <Button onClick={saveTenant} disabled={tenantSaving}>
+                  {tenantSaving ? "Saving..." : "Save Branding"}
+                </Button>
+              </div>
 
-          <div className="rounded-lg border bg-background p-6 space-y-4">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <div className="text-lg font-semibold">Risk & Limits</div>
-                <div className="text-sm text-muted-foreground">
-                  Configure PIN requirement, velocity checks, KYC threshold, and daily limits.
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Brand Name</Label>
+                  <Input value={brandName} onChange={(e) => setBrandName(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Primary Color</Label>
+                  <Input
+                    value={primaryColor}
+                    onChange={(e) => setPrimaryColor(e.target.value)}
+                    placeholder="#2563eb"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Logo URL</Label>
+                  <Input value={logoUrl} onChange={(e) => setLogoUrl(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Support Email</Label>
+                  <Input value={supportEmail} onChange={(e) => setSupportEmail(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Support Phone</Label>
+                  <Input value={supportPhone} onChange={(e) => setSupportPhone(e.target.value)} />
                 </div>
               </div>
-              <Button onClick={saveTenant} disabled={tenantSaving}>
-                {tenantSaving ? "Saving..." : "Save Risk Settings"}
-              </Button>
             </div>
+          </TabsContent>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center justify-between rounded-md border p-3">
-                <div className="space-y-1">
-                  <div className="text-sm font-medium">Require Transaction PIN</div>
-                  <div className="text-xs text-muted-foreground">Always prompt for PIN on purchases.</div>
+          <TabsContent value="services" className="animate-in fade-in-50 duration-300">
+            <div className="rounded-lg border bg-background p-6 space-y-4">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-lg font-semibold">Service Availability</div>
+                  <div className="text-sm text-muted-foreground">
+                    Disable any service to hide it from your storefront and block purchases.
+                  </div>
                 </div>
-                <Switch
-                  checked={riskForm.pinRequired}
-                  onCheckedChange={(checked) => setRiskForm((p) => ({ ...p, pinRequired: checked }))}
-                />
+                <Button onClick={saveTenant} disabled={tenantSaving}>
+                  {tenantSaving ? "Saving..." : "Save Availability"}
+                </Button>
               </div>
 
-              <div className="flex items-center justify-between rounded-md border p-3">
-                <div className="space-y-1">
-                  <div className="text-sm font-medium">Failed Tx Alerts</div>
-                  <div className="text-xs text-muted-foreground">Logically enables sending alerts for failed purchases.</div>
-                </div>
-                <Switch
-                  checked={riskForm.alertsFailedTransactions}
-                  onCheckedChange={(checked) =>
-                    setRiskForm((p) => ({ ...p, alertsFailedTransactions: checked }))
-                  }
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Velocity Window (minutes)</Label>
-                <Input
-                  value={riskForm.velocityWindowMinutes}
-                  onChange={(e) => setRiskForm((p) => ({ ...p, velocityWindowMinutes: e.target.value }))}
-                  placeholder="2"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Max Transactions per Window</Label>
-                <Input
-                  value={riskForm.velocityMaxTx}
-                  onChange={(e) => setRiskForm((p) => ({ ...p, velocityMaxTx: e.target.value }))}
-                  placeholder="6"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Daily Amount Limit (Unverified)</Label>
-                <Input
-                  value={riskForm.dailyAmountLimitUnverified}
-                  onChange={(e) =>
-                    setRiskForm((p) => ({ ...p, dailyAmountLimitUnverified: e.target.value }))
-                  }
-                  placeholder="Leave empty for no limit"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Daily Tx Limit (Unverified)</Label>
-                <Input
-                  value={riskForm.dailyTxLimitUnverified}
-                  onChange={(e) => setRiskForm((p) => ({ ...p, dailyTxLimitUnverified: e.target.value }))}
-                  placeholder="Leave empty for no limit"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Daily Amount Limit (Verified)</Label>
-                <Input
-                  value={riskForm.dailyAmountLimitVerified}
-                  onChange={(e) => setRiskForm((p) => ({ ...p, dailyAmountLimitVerified: e.target.value }))}
-                  placeholder="Leave empty for no limit"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Daily Tx Limit (Verified)</Label>
-                <Input
-                  value={riskForm.dailyTxLimitVerified}
-                  onChange={(e) => setRiskForm((p) => ({ ...p, dailyTxLimitVerified: e.target.value }))}
-                  placeholder="Leave empty for no limit"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>KYC Required Above (amount)</Label>
-                <Input
-                  value={riskForm.kycRequiredAbove}
-                  onChange={(e) => setRiskForm((p) => ({ ...p, kycRequiredAbove: e.target.value }))}
-                  placeholder="Leave empty to disable"
-                />
-              </div>
-              <div className="flex items-center justify-between rounded-md border p-3">
-                <div className="space-y-1">
-                  <div className="text-sm font-medium">Alert via Email</div>
-                  <div className="text-xs text-muted-foreground">Requires backend email delivery setup.</div>
-                </div>
-                <Switch
-                  checked={riskForm.alertsEmail}
-                  onCheckedChange={(checked) => setRiskForm((p) => ({ ...p, alertsEmail: checked }))}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { key: "airtime", label: "Airtime" },
+                  { key: "data", label: "Data" },
+                  { key: "electricity", label: "Electricity" },
+                  { key: "cable_tv", label: "Cable TV" },
+                  { key: "exam_pin", label: "Exam PIN" },
+                ].map((s) => {
+                  const enabled = !disabledServices.includes(s.key);
+                  return (
+                    <div key={s.key} className="flex items-center justify-between rounded-md border p-3">
+                      <div className="text-sm font-medium">{s.label}</div>
+                      <Switch
+                        checked={enabled}
+                        onCheckedChange={(checked) =>
+                          setDisabledServices((prev) => {
+                            const set = new Set(prev);
+                            if (checked) set.delete(s.key);
+                            else set.add(s.key);
+                            return Array.from(set);
+                          })
+                        }
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
-          </div>
+          </TabsContent>
 
-          <div className="rounded-lg border bg-background p-6 space-y-4">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <div className="text-lg font-semibold">Audit Logs</div>
-                <div className="text-sm text-muted-foreground">
-                  Track changes to pricing/settings and customer actions done by staff.
+          <TabsContent value="risk" className="animate-in fade-in-50 duration-300">
+            <div className="rounded-lg border bg-background p-6 space-y-4">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-lg font-semibold">Risk & Limits</div>
+                  <div className="text-sm text-muted-foreground">
+                    Configure PIN requirement, velocity checks, KYC threshold, and daily limits.
+                  </div>
+                </div>
+                <Button onClick={saveTenant} disabled={tenantSaving}>
+                  {tenantSaving ? "Saving..." : "Save Risk Settings"}
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center justify-between rounded-md border p-3">
+                  <div className="space-y-1">
+                    <div className="text-sm font-medium">Require Transaction PIN</div>
+                    <div className="text-xs text-muted-foreground">Always prompt for PIN on purchases.</div>
+                  </div>
+                  <Switch
+                    checked={riskForm.pinRequired}
+                    onCheckedChange={(checked) => setRiskForm((p) => ({ ...p, pinRequired: checked }))}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between rounded-md border p-3">
+                  <div className="space-y-1">
+                    <div className="text-sm font-medium">Failed Tx Alerts</div>
+                    <div className="text-xs text-muted-foreground">Logically enables sending alerts for failed purchases.</div>
+                  </div>
+                  <Switch
+                    checked={riskForm.alertsFailedTransactions}
+                    onCheckedChange={(checked) =>
+                      setRiskForm((p) => ({ ...p, alertsFailedTransactions: checked }))
+                    }
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Velocity Window (minutes)</Label>
+                  <Input
+                    value={riskForm.velocityWindowMinutes}
+                    onChange={(e) => setRiskForm((p) => ({ ...p, velocityWindowMinutes: e.target.value }))}
+                    placeholder="2"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Max Transactions per Window</Label>
+                  <Input
+                    value={riskForm.velocityMaxTx}
+                    onChange={(e) => setRiskForm((p) => ({ ...p, velocityMaxTx: e.target.value }))}
+                    placeholder="6"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Daily Amount Limit (Unverified)</Label>
+                  <Input
+                    value={riskForm.dailyAmountLimitUnverified}
+                    onChange={(e) =>
+                      setRiskForm((p) => ({ ...p, dailyAmountLimitUnverified: e.target.value }))
+                    }
+                    placeholder="Leave empty for no limit"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Daily Tx Limit (Unverified)</Label>
+                  <Input
+                    value={riskForm.dailyTxLimitUnverified}
+                    onChange={(e) => setRiskForm((p) => ({ ...p, dailyTxLimitUnverified: e.target.value }))}
+                    placeholder="Leave empty for no limit"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Daily Amount Limit (Verified)</Label>
+                  <Input
+                    value={riskForm.dailyAmountLimitVerified}
+                    onChange={(e) => setRiskForm((p) => ({ ...p, dailyAmountLimitVerified: e.target.value }))}
+                    placeholder="Leave empty for no limit"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Daily Tx Limit (Verified)</Label>
+                  <Input
+                    value={riskForm.dailyTxLimitVerified}
+                    onChange={(e) => setRiskForm((p) => ({ ...p, dailyTxLimitVerified: e.target.value }))}
+                    placeholder="Leave empty for no limit"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>KYC Required Above (amount)</Label>
+                  <Input
+                    value={riskForm.kycRequiredAbove}
+                    onChange={(e) => setRiskForm((p) => ({ ...p, kycRequiredAbove: e.target.value }))}
+                    placeholder="Leave empty to disable"
+                  />
+                </div>
+                <div className="flex items-center justify-between rounded-md border p-3">
+                  <div className="space-y-1">
+                    <div className="text-sm font-medium">Alert via Email</div>
+                    <div className="text-xs text-muted-foreground">Requires backend email delivery setup.</div>
+                  </div>
+                  <Switch
+                    checked={riskForm.alertsEmail}
+                    onCheckedChange={(checked) => setRiskForm((p) => ({ ...p, alertsEmail: checked }))}
+                  />
                 </div>
               </div>
-              <Button variant="outline" onClick={loadAuditLogs} disabled={auditLoading}>
-                {auditLoading ? "Loading..." : "Load Logs"}
-              </Button>
             </div>
+          </TabsContent>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Module (optional)</Label>
-                <Input value={auditModule} onChange={(e) => setAuditModule(e.target.value)} placeholder="pricing" />
+          <TabsContent value="pricing" className="animate-in fade-in-50 duration-300">
+            <div className="rounded-lg border bg-background p-6 space-y-4">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-lg font-semibold">Pricing</div>
+                  <div className="text-sm text-muted-foreground">
+                    Load plans by network + category, then set overrides.
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Button variant="outline" onClick={loadPlans} disabled={plansLoading}>
+                    {plansLoading ? "Loading..." : "Load Plans"}
+                  </Button>
+                  <Button onClick={savePlanOverrides} disabled={plansSaving || dirtyCount === 0}>
+                    {plansSaving ? "Saving..." : `Save Changes (${dirtyCount})`}
+                  </Button>
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label>Action (optional)</Label>
-                <Input value={auditAction} onChange={(e) => setAuditAction(e.target.value)} placeholder="tenant.update" />
-              </div>
-            </div>
 
-            {auditLogs.length ? (
-              <div className="rounded-md border overflow-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Time</TableHead>
-                      <TableHead>Module</TableHead>
-                      <TableHead>Action</TableHead>
-                      <TableHead>Actor</TableHead>
-                      <TableHead>Description</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {auditLogs.map((r) => (
-                      <TableRow key={r._id}>
-                        <TableCell className="whitespace-nowrap">
-                          {r.timestamp ? new Date(r.timestamp).toLocaleString() : "-"}
-                        </TableCell>
-                        <TableCell>{r.module || "-"}</TableCell>
-                        <TableCell>{r.action || "-"}</TableCell>
-                        <TableCell>{r.actorName || "-"}</TableCell>
-                        <TableCell className="max-w-[520px] truncate">{r.description || "-"}</TableCell>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Network</Label>
+                  <Input
+                    value={network}
+                    onChange={(e) => setNetwork(e.target.value)}
+                    placeholder="mtn or 01"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Category</Label>
+                  <Input
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    placeholder="SME"
+                  />
+                </div>
+              </div>
+
+              {plans.length > 0 ? (
+                <div className="border rounded-lg overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Plan</TableHead>
+                        <TableHead className="text-right">Base</TableHead>
+                        <TableHead className="text-right">Selling</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead className="text-right">Value</TableHead>
+                        <TableHead className="text-center">Active</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            ) : (
-              <div className="text-sm text-muted-foreground">No logs loaded.</div>
-            )}
-          </div>
-
-          <div className="rounded-lg border bg-background p-6 space-y-4">
-            <div className="flex items-center justify-between gap-4">
-              <div>
-                <div className="text-lg font-semibold">Pricing</div>
+                    </TableHeader>
+                    <TableBody>
+                      {plans.map((p) => {
+                        const edit = planEdits[String(p.planId)];
+                        return (
+                          <TableRow key={String(p.planId)}>
+                            <TableCell className="font-medium">
+                              <div className="flex flex-col">
+                                <span>{p.name}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  {p.serviceType} • {p.category || "-"} • {p.network}
+                                </span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {typeof p.basePrice === "number" ? p.basePrice : "-"}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {typeof p.sellingPrice === "number" ? p.sellingPrice : "-"}
+                            </TableCell>
+                            <TableCell>
+                              <Select
+                                value={edit?.pricingType || "flat_markup"}
+                                onValueChange={(v) =>
+                                  setPlanEdits((prev) => ({
+                                    ...prev,
+                                    [String(p.planId)]: {
+                                      ...(prev[String(p.planId)] || {
+                                        pricingType: "flat_markup",
+                                        value: "",
+                                        active: true,
+                                        dirty: false,
+                                      }),
+                                      pricingType: v as any,
+                                      dirty: true,
+                                    },
+                                  }))
+                                }
+                              >
+                                <SelectTrigger className="w-[180px]">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="flat_markup">Flat Markup</SelectItem>
+                                  <SelectItem value="percent_markup">Percent Markup</SelectItem>
+                                  <SelectItem value="fixed">Fixed</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Input
+                                className="w-[120px] text-right"
+                                value={edit?.value || ""}
+                                onChange={(e) =>
+                                  setPlanEdits((prev) => ({
+                                    ...prev,
+                                    [String(p.planId)]: {
+                                      ...(prev[String(p.planId)] || {
+                                        pricingType: "flat_markup",
+                                        value: "",
+                                        active: true,
+                                        dirty: false,
+                                      }),
+                                      value: e.target.value,
+                                      dirty: true,
+                                    },
+                                  }))
+                                }
+                                placeholder="0"
+                              />
+                            </TableCell>
+                            <TableCell className="text-center">
+                              <Switch
+                                checked={Boolean(edit?.active)}
+                                onCheckedChange={(checked) =>
+                                  setPlanEdits((prev) => ({
+                                    ...prev,
+                                    [String(p.planId)]: {
+                                      ...(prev[String(p.planId)] || {
+                                        pricingType: "flat_markup",
+                                        value: "",
+                                        active: true,
+                                        dirty: false,
+                                      }),
+                                      active: checked,
+                                      dirty: true,
+                                    },
+                                  }))
+                                }
+                              />
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
                 <div className="text-sm text-muted-foreground">
-                  Load plans by network + category, then set overrides.
+                  No plans loaded yet.
+                </div>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="audit" className="animate-in fade-in-50 duration-300">
+            <div className="rounded-lg border bg-background p-6 space-y-4">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-lg font-semibold">Audit Logs</div>
+                  <div className="text-sm text-muted-foreground">
+                    Track changes to pricing/settings and customer actions done by staff.
+                  </div>
+                </div>
+                <Button variant="outline" onClick={loadAuditLogs} disabled={auditLoading}>
+                  {auditLoading ? "Loading..." : "Load Logs"}
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Module (optional)</Label>
+                  <Input value={auditModule} onChange={(e) => setAuditModule(e.target.value)} placeholder="pricing" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Action (optional)</Label>
+                  <Input value={auditAction} onChange={(e) => setAuditAction(e.target.value)} placeholder="tenant.update" />
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Button variant="outline" onClick={loadPlans} disabled={plansLoading}>
-                  {plansLoading ? "Loading..." : "Load Plans"}
-                </Button>
-                <Button onClick={savePlanOverrides} disabled={plansSaving || dirtyCount === 0}>
-                  {plansSaving ? "Saving..." : `Save Changes (${dirtyCount})`}
-                </Button>
-              </div>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Network</Label>
-                <Input
-                  value={network}
-                  onChange={(e) => setNetwork(e.target.value)}
-                  placeholder="mtn or 01"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Category</Label>
-                <Input
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  placeholder="SME"
-                />
-              </div>
-            </div>
-
-            {plans.length > 0 ? (
-              <div className="border rounded-lg overflow-hidden">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Plan</TableHead>
-                      <TableHead className="text-right">Base</TableHead>
-                      <TableHead className="text-right">Selling</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead className="text-right">Value</TableHead>
-                      <TableHead className="text-center">Active</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {plans.map((p) => {
-                      const edit = planEdits[String(p.planId)];
-                      return (
-                        <TableRow key={String(p.planId)}>
-                          <TableCell className="font-medium">
-                            <div className="flex flex-col">
-                              <span>{p.name}</span>
-                              <span className="text-xs text-muted-foreground">
-                                {p.serviceType} • {p.category || "-"} • {p.network}
-                              </span>
-                            </div>
+              {auditLogs.length ? (
+                <div className="rounded-md border overflow-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Time</TableHead>
+                        <TableHead>Module</TableHead>
+                        <TableHead>Action</TableHead>
+                        <TableHead>Actor</TableHead>
+                        <TableHead>Description</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {auditLogs.map((r) => (
+                        <TableRow key={r._id}>
+                          <TableCell className="whitespace-nowrap">
+                            {r.timestamp ? new Date(r.timestamp).toLocaleString() : "-"}
                           </TableCell>
-                          <TableCell className="text-right">
-                            {typeof p.basePrice === "number" ? p.basePrice : "-"}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {typeof p.sellingPrice === "number" ? p.sellingPrice : "-"}
-                          </TableCell>
-                          <TableCell>
-                            <Select
-                              value={edit?.pricingType || "flat_markup"}
-                              onValueChange={(v) =>
-                                setPlanEdits((prev) => ({
-                                  ...prev,
-                                  [String(p.planId)]: {
-                                    ...(prev[String(p.planId)] || {
-                                      pricingType: "flat_markup",
-                                      value: "",
-                                      active: true,
-                                      dirty: false,
-                                    }),
-                                    pricingType: v as any,
-                                    dirty: true,
-                                  },
-                                }))
-                              }
-                            >
-                              <SelectTrigger className="w-[180px]">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="flat_markup">Flat Markup</SelectItem>
-                                <SelectItem value="percent_markup">Percent Markup</SelectItem>
-                                <SelectItem value="fixed">Fixed</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Input
-                              className="w-[120px] text-right"
-                              value={edit?.value || ""}
-                              onChange={(e) =>
-                                setPlanEdits((prev) => ({
-                                  ...prev,
-                                  [String(p.planId)]: {
-                                    ...(prev[String(p.planId)] || {
-                                      pricingType: "flat_markup",
-                                      value: "",
-                                      active: true,
-                                      dirty: false,
-                                    }),
-                                    value: e.target.value,
-                                    dirty: true,
-                                  },
-                                }))
-                              }
-                              placeholder="0"
-                            />
-                          </TableCell>
-                          <TableCell className="text-center">
-                            <Switch
-                              checked={Boolean(edit?.active)}
-                              onCheckedChange={(checked) =>
-                                setPlanEdits((prev) => ({
-                                  ...prev,
-                                  [String(p.planId)]: {
-                                    ...(prev[String(p.planId)] || {
-                                      pricingType: "flat_markup",
-                                      value: "",
-                                      active: true,
-                                      dirty: false,
-                                    }),
-                                    active: checked,
-                                    dirty: true,
-                                  },
-                                }))
-                              }
-                            />
-                          </TableCell>
+                          <TableCell>{r.module || "-"}</TableCell>
+                          <TableCell>{r.action || "-"}</TableCell>
+                          <TableCell>{r.actorName || "-"}</TableCell>
+                          <TableCell className="max-w-[520px] truncate">{r.description || "-"}</TableCell>
                         </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
-            ) : (
-              <div className="text-sm text-muted-foreground">
-                No plans loaded yet.
-              </div>
-            )}
-          </div>
-        </div>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <div className="text-sm text-muted-foreground">No logs loaded.</div>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
       )}
     </main>
   );

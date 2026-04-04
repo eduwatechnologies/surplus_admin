@@ -23,7 +23,7 @@ export function DashboardHeader() {
   };
 
   return (
-    <header className=" flex h-16 items-center gap-4 border-b bg-white px-6">
+    <header className="flex h-16 items-center gap-4 border-b border-slate-200 bg-white/70 px-6 backdrop-blur">
       <SidebarTrigger />
 
       <div className="flex flex-1 items-center gap-4">
@@ -31,7 +31,7 @@ export function DashboardHeader() {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search transactions, users..."
-            className="pl-10"
+            className="pl-10 border-slate-200 bg-white"
           />
         </div>
       </div>
@@ -39,7 +39,7 @@ export function DashboardHeader() {
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="h-4 w-4" />
-          <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs bg-blue-600 text-white">
+          <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-xs brand-bg text-white">
             3
           </Badge>
         </Button>

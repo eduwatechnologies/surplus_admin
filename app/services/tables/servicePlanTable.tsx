@@ -43,12 +43,18 @@ export function PlansTable({
   onEdit,
   onDelete,
   subId,
+  subCode,
+  serviceType,
+  onAddCategory,
 }: {
   subName: string;
   plans: ServicePlan[];
   onEdit: (plan: ServicePlan) => void;
   onDelete: (planId: string) => void;
   subId: string;
+  subCode: string;
+  serviceType: string;
+  onAddCategory: (args: { subServiceId: string; network: string }) => void;
 }) {
   const dispatch = useDispatch();
   const categoryProviders = useSelector(
@@ -62,9 +68,21 @@ export function PlansTable({
   return (
     <div className="space-y-8">
       {/* Category Providers Table */}
-      {plans.length > 0 && plans[0].serviceType === "data" && (
+      {serviceType === "data" && (
         <div>
-          <h4 className="font-semibold mb-2">Category Providers</h4>
+          <div className="mb-2 flex items-center justify-between gap-3">
+            <h4 className="font-semibold">Category Providers</h4>
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => {
+                const network = String(subCode || "").split("-")[0];
+                onAddCategory({ subServiceId: subId, network });
+              }}
+            >
+              Add Category
+            </Button>
+          </div>
           <Table>
             <TableHeader>
               <TableRow>
