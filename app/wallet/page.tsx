@@ -155,7 +155,7 @@ export default function WalletPage() {
     if (!user?.id) return;
     const b = bank.trim();
     if (!b) {
-      toast.toast({ title: "Missing bank", description: "Enter a bank identifier supported by your provider", variant: "destructive" });
+      toast.toast({ title: "Missing bank", description: "Enters a bank identifier supported by your provider", variant: "destructive" });
       return;
     }
 
