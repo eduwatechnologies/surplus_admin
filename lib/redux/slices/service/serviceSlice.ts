@@ -197,11 +197,12 @@ const serviceSlice = createSlice({
       // --- Add service plan ---
       .addCase(addServicePlan.fulfilled, (state, action) => {
         const plan = action.payload;
+        const planSubId = String((plan as any).subServiceId || "");
         const parentService = state.services.find((s) =>
-          s.subServices.some((sub) => sub._id === plan.subServiceId)
+          s.subServices.some((sub) => String((sub as any)._id) === planSubId)
         );
         const parentSub = parentService?.subServices.find(
-          (sub) => sub._id === plan.subServiceId
+          (sub) => String((sub as any)._id) === planSubId
         );
         if (parentSub) parentSub.servicePlans.push(plan);
       })
@@ -212,13 +213,15 @@ const serviceSlice = createSlice({
       // --- Update service plan ---
       .addCase(updateServicePlan.fulfilled, (state, action) => {
         const updatedPlan = action.payload;
+        const updatedSubId = String((updatedPlan as any).subServiceId || "");
+        const updatedId = String((updatedPlan as any)._id || "");
         for (const service of state.services) {
           const sub = service.subServices.find(
-            (s) => s._id === updatedPlan.subServiceId
+            (s) => String((s as any)._id) === updatedSubId
           );
           if (sub) {
             const idx = sub.servicePlans.findIndex(
-              (p) => p._id === updatedPlan._id
+              (p) => String((p as any)._id) === updatedId
             );
             if (idx > -1) sub.servicePlans[idx] = updatedPlan;
           }

@@ -28,6 +28,7 @@ const servicePlanSchema = Yup.object().shape({
   network: Yup.string().required("Network is required"),
   planKind: Yup.string().oneOf(["fixed", "variable"]).required("Plan kind is required"),
   category: Yup.string().required("Category is required"),
+  easyaccessId: Yup.string().trim().notRequired(),
   autopilotId: Yup.string().trim().notRequired(),
   validity: Yup.string().when("planKind", {
     is: "fixed",
@@ -130,10 +131,9 @@ export function ServicePlanForm({
       (initialValues as any).validity ||
       (defaultPlanKind === "variable" ? "Instant" : "30 Days"),
     active: (initialValues as any).active ?? true,
+    easyaccessId: String((initialValues as any).easyaccessId || ""),
+    autopilotId: String((initialValues as any).autopilotId || ""),
   };
-
-  const showEasyaccessId = String(provider || "").toLowerCase() === "easyaccess";
-  const showAutopilotId = String(provider || "").toLowerCase().includes("autopilot");
 
   return (
     <Formik
@@ -156,33 +156,43 @@ export function ServicePlanForm({
           if (body.planKind !== "variable") {
             body.ourPrice = Number(values.ourPrice);
           }
-          if (showEasyaccessId && values.easyaccessId) body.easyaccessId = String(values.easyaccessId).trim();
-          if (values.autopilotId) body.autopilotId = String(values.autopilotId).trim();
+          body.easyaccessId = String(values.easyaccessId || "").trim() || null;
+          body.autopilotId = String(values.autopilotId || "").trim() || null;
 
-          if (!values._id) {
-            await dispatch(
-              addServicePlan({
+          const action = !values._id
+            ? addServicePlan({
                 subServiceId: subServiceId,
                 payload: body,
               })
-            );
-          } else {
-            await dispatch(
-              updateServicePlan({
+            : updateServicePlan({
                 id: values._id,
                 data: body,
-              })
-            );
+              });
+
+          const result = await dispatch(action);
+
+          if (addServicePlan.fulfilled.match(result) || updateServicePlan.fulfilled.match(result)) {
+            toast.toast({
+              title: values._id ? "Updated" : "Created",
+              description: values._id ? "Service plan updated successfully" : "Service plan created successfully",
+            });
+            onSubmitSuccess?.();
+            return;
           }
 
-          setSubmitting(false);
-          onSubmitSuccess?.();
+          toast.toast({
+            title: "Failed",
+            description: (result as any)?.payload || "Could not save plan. Check required fields and try again.",
+            variant: "destructive",
+          });
+          return;
         } catch (err) {
           toast.toast({
             title: "Failed",
             description: "Could not save plan. Check required fields and try again.",
             variant: "destructive",
           });
+        } finally {
           setSubmitting(false);
         }
       }}
@@ -327,33 +337,29 @@ export function ServicePlanForm({
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
-            {showEasyaccessId ? (
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                  EasyAccess Plan Id
-                </label>
-                <Field as={Input} name="easyaccessId" />
-                <ErrorMessage
-                  name="easyaccessId"
-                  component="div"
-                  className="text-xs text-red-500 mt-1"
-                />
-              </div>
-            ) : null}
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700">
+                EasyAccess Plan Id
+              </label>
+              <Field as={Input} name="easyaccessId" />
+              <ErrorMessage
+                name="easyaccessId"
+                component="div"
+                className="text-xs text-red-500 mt-1"
+              />
+            </div>
 
-            {showAutopilotId ? (
-              <div className="space-y-1">
-                <label className="block text-sm font-medium text-gray-700">
-                  Autopilot Plan Id
-                </label>
-                <Field as={Input} name="autopilotId" />
-                <ErrorMessage
-                  name="autopilotId"
-                  component="div"
-                  className="text-xs text-red-500 mt-1"
-                />
-              </div>
-            ) : null}
+            <div className="space-y-1">
+              <label className="block text-sm font-medium text-gray-700">
+                Autopilot Plan Id
+              </label>
+              <Field as={Input} name="autopilotId" />
+              <ErrorMessage
+                name="autopilotId"
+                component="div"
+                className="text-xs text-red-500 mt-1"
+              />
+            </div>
           </div>
 
           <div className="flex items-center justify-between rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
