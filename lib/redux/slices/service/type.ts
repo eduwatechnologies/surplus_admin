@@ -8,6 +8,7 @@ export interface ServicePlan {
   network?: string;
   serviceType: string;
   validity?: string;
+  planKind?: "fixed" | "variable";
   active: boolean;
   easyaccessId?: string;
   autopilotId?: string;
@@ -30,7 +31,7 @@ export interface SubService {
 export interface Service {
   _id: string;
   name: string;
-  type: "airtime" | "data" | "electricity" | "cabletv" | "exampin";
+  type: "airtime" | "data" | "electricity" | "cable" | "exam" | "cabletv" | "exampin";
   description?: string;
   status: boolean;
   createdAt: string;

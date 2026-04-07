@@ -99,11 +99,7 @@ const staffMenuGroups = [
         icon: Wifi,
       },
      
-      {
-        title: "Marketplace",
-        url: "/marketplace",
-        icon: ShoppingBag,
-      },
+  
     ],
   },
   {
@@ -189,6 +185,7 @@ export function AppSidebar() {
   const { name: BRAND_NAME, logoUrl, primaryColor } = useBranding(role);
   const BRAND_INITIAL = (BRAND_NAME.trim()[0] || "A").toUpperCase();
   const menuGroups = isMerchant ? merchantMenuGroups : staffMenuGroups;
+  const sidebarBrandColor = primaryColor || "var(--brand-600)";
 
   const onLogout = () => {
     console.log("User logged out");
@@ -196,7 +193,11 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar className="w-64 h-screen border-r border-slate-200 bg-white/70 text-slate-800 backdrop-blur">
+    <Sidebar
+      className="w-64 h-screen border-r border-slate-200 bg-white/70 text-slate-800 backdrop-blur"
+      style={{ ["--sidebar-brand" as any]: sidebarBrandColor } as React.CSSProperties}
+    >
+      <div className="pointer-events-none absolute left-0 top-0 h-full w-1 bg-[color:var(--sidebar-brand)] opacity-80" />
       <SidebarHeader className="px-6 py-6 border-b border-slate-200 bg-white/60 backdrop-blur">
         <div className="flex items-center gap-3">
           {logoUrl ? (
@@ -240,16 +241,19 @@ export function AppSidebar() {
                       <Link
                         href={item.url}
                         className={cn(
-                          "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium group relative",
+                          "flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium group relative overflow-hidden",
                           isActive
                             ? "bg-[color:var(--brand-50)] text-slate-900"
                             : "text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                         )}
                       >
+                        {isActive && (
+                          <div className="absolute left-0 top-1/2 h-6 w-1 -translate-y-1/2 rounded-r bg-[color:var(--sidebar-brand)]" />
+                        )}
                         <item.icon className={cn("w-5 h-5 transition-colors", isActive ? "brand-text" : "text-slate-500 group-hover:text-slate-700")} />
                         <span>{item.title}</span>
                         {isActive && (
-                          <div className="absolute right-2 w-1.5 h-1.5 rounded-full bg-[color:var(--brand-600)]" />
+                          <div className="absolute right-2 w-1.5 h-1.5 rounded-full bg-[color:var(--sidebar-brand)]" />
                         )}
                       </Link>
                     </SidebarMenuButton>

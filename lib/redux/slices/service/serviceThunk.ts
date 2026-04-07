@@ -11,7 +11,11 @@ export const fetchServices = createAsyncThunk(
       return res.data as Service[];
     } catch (err: any) {
       return thunkAPI.rejectWithValue(
-        err.response?.data?.msg || "Failed to fetch services"
+        err.response?.data?.msg ||
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          "Failed to fetch services"
       );
     }
   }
@@ -26,7 +30,29 @@ export const toggleSubServiceStatus = createAsyncThunk(
       return res.data.data as SubService;
     } catch (err: any) {
       return thunkAPI.rejectWithValue(
-        err.response?.data?.msg || "Failed to toggle subservice"
+        err.response?.data?.msg ||
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          "Failed to toggle subservice"
+      );
+    }
+  }
+);
+
+export const toggleServiceStatus = createAsyncThunk(
+  "service/toggleServiceStatus",
+  async (id: string, thunkAPI) => {
+    try {
+      const res = await axiosInstance.patch(`/services/${id}/toggle-status`);
+      return res.data.data as Service;
+    } catch (err: any) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.msg ||
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          "Failed to toggle service"
       );
     }
   }
@@ -66,7 +92,11 @@ export const addService = createAsyncThunk(
       return { ...res.data.data, subServices: [] } as Service;
     } catch (err: any) {
       return thunkAPI.rejectWithValue(
-        err.response?.data?.msg || "Failed to add service"
+        err.response?.data?.msg ||
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          "Failed to add service"
       );
     }
   }
@@ -81,7 +111,11 @@ export const updateService = createAsyncThunk(
       return res.data.data as Service;
     } catch (err: any) {
       return thunkAPI.rejectWithValue(
-        err.response?.data?.msg || "Failed to update service"
+        err.response?.data?.msg ||
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          "Failed to update service"
       );
     }
   }
@@ -96,7 +130,11 @@ export const deleteService = createAsyncThunk(
       return id;
     } catch (err: any) {
       return thunkAPI.rejectWithValue(
-        err.response?.data?.msg || "Failed to delete service"
+        err.response?.data?.msg ||
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          "Failed to delete service"
       );
     }
   }
@@ -117,7 +155,11 @@ export const addSubService = createAsyncThunk(
       return res.data.data as SubService;
     } catch (err: any) {
       return thunkAPI.rejectWithValue(
-        err.response?.data?.msg || "Failed to add subservice"
+        err.response?.data?.msg ||
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          "Failed to add subservice"
       );
     }
   }
@@ -132,7 +174,11 @@ export const updateSubService = createAsyncThunk(
       return res.data.data as SubService;
     } catch (err: any) {
       return thunkAPI.rejectWithValue(
-        err.response?.data?.msg || "Failed to update subservice"
+        err.response?.data?.msg ||
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          "Failed to update subservice"
       );
     }
   }
@@ -147,7 +193,11 @@ export const deleteSubService = createAsyncThunk(
       return id;
     } catch (err: any) {
       return thunkAPI.rejectWithValue(
-        err.response?.data?.msg || "Failed to delete subservice"
+        err.response?.data?.msg ||
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          "Failed to delete subservice"
       );
     }
   }
@@ -179,7 +229,11 @@ export const addServicePlan = createAsyncThunk(
       return res.data.data as ServicePlan;
     } catch (err: any) {
       return thunkAPI.rejectWithValue(
-        err.response?.data?.msg || "Failed to add service plan"
+        err.response?.data?.msg ||
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          "Failed to add service plan"
       );
     }
   }
@@ -197,7 +251,11 @@ export const updateServicePlan = createAsyncThunk(
       return res.data.data as ServicePlan;
     } catch (err: any) {
       return thunkAPI.rejectWithValue(
-        err.response?.data?.msg || "Failed to update service plan"
+        err.response?.data?.msg ||
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          "Failed to update service plan"
       );
     }
   }
@@ -212,7 +270,11 @@ export const deleteServicePlan = createAsyncThunk(
       return id;
     } catch (err: any) {
       return thunkAPI.rejectWithValue(
-        err.response?.data?.msg || "Failed to delete service plan"
+        err.response?.data?.msg ||
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          err.message ||
+          "Failed to delete service plan"
       );
     }
   }

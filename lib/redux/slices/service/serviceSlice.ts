@@ -9,6 +9,7 @@ import {
   deleteServicePlan,
   deleteSubService,
   fetchServices,
+  toggleServiceStatus,
   toggleSubServiceStatus,
   updateService,
   updateServicePlan,
@@ -108,10 +109,36 @@ const serviceSlice = createSlice({
       .addCase(updateService.fulfilled, (state, action) => {
         const updated = action.payload;
         const idx = state.services.findIndex((s) => s._id === updated._id);
-        if (idx > -1) state.services[idx] = updated;
+        if (idx > -1) {
+          const existing = state.services[idx];
+          state.services[idx] = {
+            ...existing,
+            ...updated,
+            subServices: Array.isArray((updated as any).subServices)
+              ? (updated as any).subServices
+              : existing.subServices,
+          };
+        }
         state.filteredServices = state.services;
       })
       .addCase(updateService.rejected, (state, action) => {
+        state.error = action.payload as string;
+      })
+
+      .addCase(toggleServiceStatus.fulfilled, (state, action) => {
+        const updated = action.payload;
+        const idx = state.services.findIndex((s) => s._id === updated._id);
+        if (idx > -1) {
+          const existing = state.services[idx];
+          state.services[idx] = {
+            ...existing,
+            ...updated,
+            subServices: existing.subServices,
+          };
+        }
+        state.filteredServices = state.services;
+      })
+      .addCase(toggleServiceStatus.rejected, (state, action) => {
         state.error = action.payload as string;
       })
 
