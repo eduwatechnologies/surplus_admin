@@ -53,6 +53,10 @@ type TenantProfile = {
       email?: boolean;
     };
   };
+  billingSettings?: {
+    merchantFeeEnabled?: boolean;
+    merchantFeeAmount?: number;
+  } | null;
 };
 
 type PricingOverride = {
@@ -101,6 +105,17 @@ type AuditLogRow = {
   actorName?: string | null;
   description?: string | null;
   ipAddress?: string | null;
+};
+
+type BankAccountRow = {
+  _id: string;
+  bankName?: string | null;
+  bankCode?: string | null;
+  accountNumber?: string | null;
+  accountName?: string | null;
+  reference?: string | null;
+  providerCreatedAt?: string | null;
+  createdAt?: string | null;
 };
 
 function MerchantOnboarding() {
@@ -232,6 +247,11 @@ function MerchantSettings() {
     alertsEmail: false,
   });
 
+  const [merchantFeeEnabled, setMerchantFeeEnabled] = useState(false);
+  const [merchantFeeAmount, setMerchantFeeAmount] = useState("0");
+  const [bankAccounts, setBankAccounts] = useState<BankAccountRow[]>([]);
+  const [bankAccountsLoading, setBankAccountsLoading] = useState(false);
+
   const [auditLogs, setAuditLogs] = useState<AuditLogRow[]>([]);
   const [auditLoading, setAuditLoading] = useState(false);
   const [auditModule, setAuditModule] = useState("");
@@ -266,6 +286,13 @@ function MerchantSettings() {
         setSupportPhone(t?.supportPhone || "");
         setDisabledServices(Array.isArray(t?.disabledServices) ? t.disabledServices : []);
         const rs = t?.riskSettings || {};
+        const bs = t?.billingSettings || {};
+        setMerchantFeeEnabled(bs?.merchantFeeEnabled === true);
+        setMerchantFeeAmount(
+          typeof bs?.merchantFeeAmount === "number" && Number.isFinite(bs.merchantFeeAmount)
+            ? String(bs.merchantFeeAmount)
+            : "0"
+        );
         setRiskForm({
           pinRequired: rs?.pinRequired === true,
           velocityWindowMinutes:
@@ -299,6 +326,22 @@ function MerchantSettings() {
           alertsFailedTransactions: rs.alerts?.failedTransactions === true,
           alertsEmail: rs.alerts?.email === true,
         });
+
+        setBankAccountsLoading(true);
+        axiosInstance
+          .get("/tenants/me/bank-accounts")
+          .then((accRes) => {
+            if (!mounted) return;
+            setBankAccounts(((accRes.data?.accounts || []) as BankAccountRow[]) || []);
+          })
+          .catch(() => {
+            if (!mounted) return;
+            setBankAccounts([]);
+          })
+          .finally(() => {
+            if (!mounted) return;
+            setBankAccountsLoading(false);
+          });
       })
       .catch((err) => {
         if (!mounted) return;
@@ -350,6 +393,20 @@ function MerchantSettings() {
         return;
       }
 
+      const feeEnabled = merchantFeeEnabled === true;
+      const feeAmountRaw = String(merchantFeeAmount || "").trim();
+      const feeAmountNum = feeAmountRaw ? Number(feeAmountRaw) : 0;
+      if (feeEnabled) {
+        if (!Number.isFinite(feeAmountNum) || feeAmountNum <= 0) {
+          toast.toast({
+            title: "Invalid fee",
+            description: "Fee amount must be a number greater than 0",
+            variant: "destructive",
+          });
+          return;
+        }
+      }
+
       const res = await axiosInstance.put("/tenants/me", {
         brandName,
         logoUrl,
@@ -357,6 +414,10 @@ function MerchantSettings() {
         supportEmail,
         supportPhone,
         disabledServices,
+        billingSettings: {
+          merchantFeeEnabled: feeEnabled,
+          merchantFeeAmount: feeEnabled ? feeAmountNum : 0,
+        },
         riskSettings: {
           pinRequired: riskForm.pinRequired,
           velocityWindowMinutes,
@@ -376,6 +437,13 @@ function MerchantSettings() {
       setTenant(t);
       setDisabledServices(Array.isArray(t?.disabledServices) ? t.disabledServices : disabledServices);
       const rs = t?.riskSettings || {};
+      const bs = t?.billingSettings || {};
+      setMerchantFeeEnabled(bs?.merchantFeeEnabled === true);
+      setMerchantFeeAmount(
+        typeof bs?.merchantFeeAmount === "number" && Number.isFinite(bs.merchantFeeAmount)
+          ? String(bs.merchantFeeAmount)
+          : "0"
+      );
       setRiskForm((prev) => ({
         ...prev,
         pinRequired: rs?.pinRequired === true,
@@ -410,7 +478,7 @@ function MerchantSettings() {
         alertsFailedTransactions: rs.alerts?.failedTransactions === true,
         alertsEmail: rs.alerts?.email === true,
       }));
-      toast.toast({ title: "Saved", description: "Branding updated successfully" });
+      toast.toast({ title: "Saved", description: "Settings updated successfully" });
     } catch (err: any) {
       const msg =
         err?.response?.data?.error || err?.response?.data?.message || err?.message || "Failed";
@@ -549,6 +617,12 @@ function MerchantSettings() {
                 className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3 px-1"
               >
                 Risk & Limits
+              </TabsTrigger>
+              <TabsTrigger
+                value="billing"
+                className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none pb-3 px-1"
+              >
+                Billing
               </TabsTrigger>
               <TabsTrigger
                 value="pricing"
@@ -762,6 +836,77 @@ function MerchantSettings() {
                     onCheckedChange={(checked) => setRiskForm((p) => ({ ...p, alertsEmail: checked }))}
                   />
                 </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="billing" className="animate-in fade-in-50 duration-300">
+            <div className="rounded-lg border bg-background p-6 space-y-6">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-lg font-semibold">Billing</div>
+                  <div className="text-sm text-muted-foreground">Configure fees and view your funding accounts.</div>
+                </div>
+                <Button onClick={saveTenant} disabled={tenantSaving}>
+                  {tenantSaving ? "Saving..." : "Save Billing"}
+                </Button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between rounded-md border p-3">
+                  <div className="space-y-1">
+                    <div className="text-sm font-medium">Charge merchant transaction fee</div>
+                    <div className="text-xs text-muted-foreground">
+                      If enabled, your wallet is charged an extra fee for each successful purchase made by your customers.
+                    </div>
+                  </div>
+                  <Switch checked={merchantFeeEnabled} onCheckedChange={setMerchantFeeEnabled} />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Fee amount (₦)</Label>
+                    <Input
+                      value={merchantFeeAmount}
+                      onChange={(e) => setMerchantFeeAmount(e.target.value)}
+                      disabled={!merchantFeeEnabled}
+                      inputMode="decimal"
+                      placeholder="e.g. 10"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div className="text-sm font-medium">Funding accounts</div>
+                {bankAccountsLoading ? (
+                  <div className="text-sm text-muted-foreground">Loading accounts...</div>
+                ) : bankAccounts.length ? (
+                  <div className="rounded-md border overflow-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Bank</TableHead>
+                          <TableHead>Account Name</TableHead>
+                          <TableHead>Account Number</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {bankAccounts.map((a) => (
+                          <TableRow key={a._id}>
+                            <TableCell>{a.bankName || "-"}</TableCell>
+                            <TableCell>{a.accountName || "-"}</TableCell>
+                            <TableCell className="whitespace-nowrap">{a.accountNumber || "-"}</TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                ) : (
+                  <div className="text-sm text-muted-foreground">
+                    No funding account found yet. Create one from Wallet.
+                  </div>
+                )}
               </div>
             </div>
           </TabsContent>
